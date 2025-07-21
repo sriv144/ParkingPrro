@@ -1,6 +1,10 @@
 <template>
   <div class="landing-page">
+<<<<<<< HEAD
     <Navbar />
+=======
+    <AppNavbar />
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
 
     <!-- HERO SLIDER -->
     <section class="hero">
@@ -15,11 +19,15 @@
           <div class="hero-content">
             <h1>{{ slide.title }}</h1>
             <p>{{ slide.text }}</p>
+<<<<<<< HEAD
             <router-link
               v-if="!authState.isLoggedIn"
               to="/login"
               class="btn-primary"
             >Get Started</router-link>
+=======
+            <router-link to="/register" class="btn-primary">Get Started</router-link>
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
           </div>
         </div>
       </transition-group>
@@ -78,6 +86,7 @@
 </template>
 
 <script>
+<<<<<<< HEAD
 import { inject } from 'vue';
 import Navbar from './Navbar.vue'; // ✅ Use correct multi-word component
 
@@ -92,12 +101,25 @@ export default {
   data() {
     return {
       current: 0,
+=======
+import AppNavbar from './Navbar.vue'
+
+export default {
+  name: 'LandingPage',
+  components: { AppNavbar },
+  data() {
+    return {
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
       slides: [
         { img: '/img1.jpg', title: 'Effortless Parking',     text: 'Find, reserve & park in seconds.' },
         { img: '/img2.jpg', title: 'Real-Time Availability', text: 'Live spot status at your fingertips.' },
         { img: '/img3.jpg', title: 'Cashless & Secure',      text: 'Pay via app with bank-grade security.' },
         { img: '/img4.jpg', title: 'On-the-Go Booking',      text: 'Manage your reservations anywhere.' },
       ],
+<<<<<<< HEAD
+=======
+      current: 0,
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
       whyUs: [
         { title: 'Superior Service',      text: 'Decades of experience delivering top-notch parking management.' },
         { title: 'Innovative Technology', text: 'Cloud-native platform built for scale and reliability.' },
@@ -115,11 +137,19 @@ export default {
   },
   mounted() {
     this.interval = setInterval(() => {
+<<<<<<< HEAD
       this.current = (this.current + 1) % this.slides.length;
     }, 5000);
   },
   beforeUnmount() {
     clearInterval(this.interval);
+=======
+      this.current = (this.current + 1) % this.slides.length
+    }, 5000)
+  },
+  beforeUnmount() {
+    clearInterval(this.interval)
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
   }
 }
 </script>

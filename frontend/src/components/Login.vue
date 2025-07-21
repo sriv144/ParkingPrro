@@ -20,7 +20,10 @@
           <router-link to="/terms">Terms &amp; conditions</router-link>
         </div>
 
+
         <div v-if="error" class="form-error">{{ error }}</div>
+
+
 
         <button class="btn-submit" type="submit">Submit</button>
       </form>
@@ -34,14 +37,18 @@
 </template>
 
 <script>
+
 import { ref, inject } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Navbar from './Navbar.vue';
 
+import Navbar from './Navbar.vue'
+
 export default {
   name: 'LoginPage',
   components: { Navbar },
+
   setup() {
     const router = useRouter();
     const authState = inject('authState');
@@ -75,6 +82,23 @@ export default {
     return { form, error, onSubmit };
   }
 };
+
+  data() {
+    return {
+      form: {
+        email: '',
+        password: ''
+      }
+    }
+  },
+  methods: {
+    onSubmit() {
+      // TODO: do real login here, then...
+      this.$router.push('/admin')
+    }
+  }
+}
+
 </script>
 
 <style scoped>
@@ -98,6 +122,8 @@ export default {
 .form-card h2 {
   text-align: center;
   margin-bottom: 1.5rem;
+  color: #00d4ff;
+
 }
 .form-group {
   margin-bottom: 1.2rem;
@@ -135,6 +161,8 @@ export default {
   text-align: center;
   margin-bottom: 1rem;
 }
+
+
 .btn-submit {
   width: 100%;
   padding: 0.8rem;

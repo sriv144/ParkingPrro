@@ -1,11 +1,18 @@
 from flask import Blueprint, request, jsonify
 from functools import wraps
+<<<<<<< HEAD
 from flask_jwt_extended import jwt_required, get_jwt
+=======
+from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
 from models import db, ParkingLot, ParkingSpot, User, Reservation
 
 admin_bp = Blueprint('admin', __name__)
 
+<<<<<<< HEAD
 # Middleware to check for admin token
+=======
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
 def admin_required(fn):
     @wraps(fn)
     @jwt_required()
@@ -16,8 +23,11 @@ def admin_required(fn):
         return fn(*args, **kwargs)
     return wrapper
 
+<<<<<<< HEAD
 # ------------------------- LOT ROUTES -------------------------
 
+=======
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
 @admin_bp.route('/lots', methods=['GET'])
 @admin_required
 def list_lots():
@@ -38,7 +48,10 @@ def list_lots():
         })
     return jsonify(lots=result), 200
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
 @admin_bp.route('/lots/<int:lot_id>', methods=['GET'])
 @admin_required
 def get_lot(lot_id):
@@ -54,15 +67,23 @@ def get_lot(lot_id):
         'spots': spots
     }), 200
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
 @admin_bp.route('/lots', methods=['POST'])
 @admin_required
 def create_lot():
     data = request.get_json() or {}
     required = ['prime_location_name', 'address', 'pin_code', 'price', 'number_of_spots']
+<<<<<<< HEAD
     if not all(field in data for field in required):
         return jsonify(msg="Missing fields"), 400
 
+=======
+    if not all(k in data for k in required):
+        return jsonify(msg="Missing fields"), 400
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
     lot = ParkingLot(
         prime_location_name=data['prime_location_name'],
         address=data['address'],
@@ -71,6 +92,7 @@ def create_lot():
         number_of_spots=data['number_of_spots']
     )
     db.session.add(lot)
+<<<<<<< HEAD
     db.session.flush()  # Get lot.id before commit
 
     # Create parking spots
@@ -81,11 +103,20 @@ def create_lot():
     return jsonify(msg="Lot created", lot_id=lot.id), 201
 
 
+=======
+    db.session.flush()
+    spots = [ParkingSpot(lot_id=lot.id) for _ in range(lot.number_of_spots)]
+    db.session.add_all(spots)
+    db.session.commit()
+    return jsonify(msg="Lot created", lot_id=lot.id), 201
+
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
 @admin_bp.route('/lots/<int:lot_id>', methods=['PUT'])
 @admin_required
 def update_lot(lot_id):
     lot = ParkingLot.query.get_or_404(lot_id)
     data = request.get_json() or {}
+<<<<<<< HEAD
 
     # Update lot details
     for field in ['prime_location_name', 'address', 'pin_code', 'price']:
@@ -116,25 +147,57 @@ def update_lot(lot_id):
     return jsonify(msg="Lot updated"), 200
 
 
+=======
+    for field in ['prime_location_name', 'address', 'pin_code', 'price']:
+        if field in data:
+            setattr(lot, field, data[field])
+    if 'number_of_spots' in data:
+        new_cap = data['number_of_spots']
+        cur_cap = lot.number_of_spots
+        if new_cap > cur_cap:
+            for _ in range(new_cap - cur_cap):
+                db.session.add(ParkingSpot(lot_id=lot.id))
+        elif new_cap < cur_cap:
+            to_remove = ParkingSpot.query.filter_by(lot_id=lot.id, status='A')\
+                                         .limit(cur_cap - new_cap).all()
+            if len(to_remove) < (cur_cap - new_cap):
+                return jsonify(msg="Cannot reduce below occupied"), 400
+            for spot in to_remove:
+                db.session.delete(spot)
+        lot.number_of_spots = new_cap
+    db.session.commit()
+    return jsonify(msg="Lot updated"), 200
+
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
 @admin_bp.route('/lots/<int:lot_id>', methods=['DELETE'])
 @admin_required
 def delete_lot(lot_id):
     lot = ParkingLot.query.get_or_404(lot_id)
+<<<<<<< HEAD
     occupied_count = ParkingSpot.query.filter_by(lot_id=lot.id, status='O').count()
 
     if occupied_count > 0:
         return jsonify(msg="Cannot delete lot with occupied spots"), 400
 
+=======
+    occ = ParkingSpot.query.filter_by(lot_id=lot.id, status='O').count()
+    if occ > 0:
+        return jsonify(msg="Cannot delete lot with occupied spots"), 400
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
     db.session.delete(lot)
     db.session.commit()
     return jsonify(msg="Lot deleted"), 200
 
+<<<<<<< HEAD
 # ------------------------- USER ROUTES -------------------------
 
+=======
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
 @admin_bp.route('/users', methods=['GET'])
 @admin_required
 def list_users():
     users = User.query.all()
+<<<<<<< HEAD
     result = []
     for u in users:
         active_res = Reservation.query.filter_by(user_id=u.id, leaving_timestamp=None).all()
@@ -151,3 +214,15 @@ def list_users():
             'active_spot_ids': [r.spot_id for r in active_res]
         })
     return jsonify(users=result), 200
+=======
+    out = []
+    for u in users:
+        active = Reservation.query.filter_by(user_id=u.id, leaving_timestamp=None).all()
+        out.append({
+            'id': u.id,
+            'username': u.username,
+            'email': u.email,
+            'active_spot_ids': [r.spot_id for r in active]
+        })
+    return jsonify(users=out), 200
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348

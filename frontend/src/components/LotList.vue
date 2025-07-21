@@ -1,33 +1,52 @@
+<<<<<<< HEAD
+=======
+<!-- src/components/LotList.vue -->
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
 <template>
   <div class="lots-container">
     <h1>Parking Lots</h1>
     <div class="lots-grid">
       <div v-for="lot in lots" :key="lot.id" class="lot-card">
         <h3>{{ lot.name }}</h3>
+<<<<<<< HEAD
         <p>Occupied: {{ lot.occupied_spots }} / {{ lot.capacity }}</p>
         <button @click="editLot(lot.id)">Edit</button>
         <button @click="removeLot(lot.id)">Delete</button>
 
+=======
+        <p>Occupied: {{ lot.occupied }} / {{ lot.capacity }}</p>
+        <button @click="editLot(lot.id)">Edit</button>
+        <button @click="removeLot(lot.id)">Delete</button>
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
         <div class="spots">
           <span
             v-for="n in lot.capacity"
             :key="n"
+<<<<<<< HEAD
             :class="{
               'spot-occupied': n <= lot.occupied_spots,
               'spot-free': n > lot.occupied_spots
             }"
+=======
+            :class="{'spot-occupied': n <= lot.occupied, 'spot-free': n > lot.occupied}"
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
           ></span>
         </div>
       </div>
     </div>
+<<<<<<< HEAD
 
     <button class="add-lot-btn" @click="$router.push('/admin/add-lot')">
+=======
+    <button class="add-lot-btn" @click="$router.push('/admin/lots/new')">
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
       + Add Lot
     </button>
   </div>
 </template>
 
 <script>
+<<<<<<< HEAD
 import axios from 'axios';
 export default {
   name: 'LotList',
@@ -66,6 +85,28 @@ export default {
   mounted() {
     this.fetchLots();
   },
+=======
+export default {
+  name: "LotList",
+  data() {
+    return {
+      // stub data for now
+      lots: [
+        { id: 1, name: "Lot #1", occupied: 3, capacity: 5 },
+        { id: 2, name: "Lot #2", occupied: 4, capacity: 4 },
+      ],
+    };
+  },
+  methods: {
+    editLot(id) {
+      this.$router.push(`/admin/lots/${id}/edit`);
+    },
+    removeLot(id) {
+      // TODO: call backend, then:
+      this.lots = this.lots.filter(l => l.id !== id);
+    },
+  },
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
 };
 </script>
 
@@ -73,6 +114,7 @@ export default {
 .lots-container {
   max-width: 1200px;
   margin: auto;
+<<<<<<< HEAD
   padding: 2rem;
   background: linear-gradient(to right, #000000, #2c2c2c);
   border-radius: 12px;
@@ -82,6 +124,8 @@ export default {
   text-align: center;
   color: #00d4ff;
   margin-bottom: 1.5rem;
+=======
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
 }
 .lots-grid {
   display: flex;
@@ -90,6 +134,7 @@ export default {
   margin-bottom: 1.5rem;
 }
 .lot-card {
+<<<<<<< HEAD
   flex: 1 1 260px;
   background: rgba(255, 255, 255, 0.06);
   border-radius: 12px;
@@ -140,11 +185,36 @@ export default {
 .add-lot-btn {
   display: block;
   margin: auto;
+=======
+  flex: 1 1 200px;
+  background: rgba(0,0,0,0.05);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.lot-card .spots {
+  display: flex;
+  gap: 4px;
+  margin-top: 0.75rem;
+}
+.spot-free {
+  width: 16px;
+  height: 16px;
+  background: #3fae3f;
+}
+.spot-occupied {
+  width: 16px;
+  height: 16px;
+  background: #e34e4e;
+}
+.add-lot-btn {
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
   background: #00d4ff;
   color: #001f3f;
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 6px;
+<<<<<<< HEAD
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
@@ -152,5 +222,8 @@ export default {
 }
 .add-lot-btn:hover {
   background: #00aacc;
+=======
+  cursor: pointer;
+>>>>>>> 20f5d19e6e8033dcd30bd885ac124933a0f92348
 }
 </style>
