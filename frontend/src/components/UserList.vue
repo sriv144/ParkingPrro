@@ -1,7 +1,7 @@
 <template>
   <div class="container py-3">
     <h2>Users</h2>
-    <table class="table">
+    <table class="table table-dark table-striped">
       <thead>
         <tr>
           <th>ID</th><th>Username</th><th>Email</th><th>Active Spots</th>
@@ -27,7 +27,7 @@ export default {
   data() { return { users: [] } },
   methods: {
     fetchUsers() {
-      const token = localStorage.getItem('adminToken')
+      const token = localStorage.getItem('token')
       axios.get('/api/admin/users', { headers: { Authorization: `Bearer ${token}` } })
            .then(r => this.users = r.data.users)
     }

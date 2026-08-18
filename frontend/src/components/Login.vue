@@ -6,9 +6,17 @@
       <h2>Welcome Back</h2>
       <form @submit.prevent="onSubmit">
         <div class="form-group">
-          <label><i class="fas fa-envelope"></i> Email Address*</label>
-          <input type="email" v-model="form.email" required />
+          <label>
+            <i :class="form.isAdmin ? 'fas fa-user-shield' : 'fas fa-envelope'"></i>
+            {{ form.isAdmin ? 'Admin Username*' : 'Email Address*' }}
+          </label>
+          <input :type="form.isAdmin ? 'text' : 'email'" v-model="form.identifier" required />
         </div>
+
+        <label class="admin-toggle">
+          <input type="checkbox" v-model="form.isAdmin" />
+          Sign in as administrator
+        </label>
 
         <div class="form-group">
           <label><i class="fas fa-lock"></i> Password*</label>
@@ -20,10 +28,7 @@
           <router-link to="/terms">Terms &amp; conditions</router-link>
         </div>
 
-
         <div v-if="error" class="form-error">{{ error }}</div>
-
-
 
         <button class="btn-submit" type="submit">Submit</button>
       </form>
@@ -37,35 +42,33 @@
 </template>
 
 <script>
-
 import { ref, inject } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Navbar from './Navbar.vue';
 
-import Navbar from './Navbar.vue'
-
 export default {
   name: 'LoginPage',
   components: { Navbar },
-
   setup() {
     const router = useRouter();
     const authState = inject('authState');
 
     const form = ref({
-      email: '',
-      password: ''
+      identifier: '',
+      password: '',
+      isAdmin: false
     });
 
     const error = ref('');
 
     const onSubmit = async () => {
       try {
-        const res = await axios.post('/api/auth/login', {
-          email: form.value.email,
-          password: form.value.password
-        });
+        const endpoint = form.value.isAdmin ? '/api/auth/admin/login' : '/api/auth/login';
+        const credentials = form.value.isAdmin
+          ? { username: form.value.identifier, password: form.value.password }
+          : { email: form.value.identifier, password: form.value.password };
+        const res = await axios.post(endpoint, credentials);
 
         localStorage.setItem('token', res.data.access_token);
         localStorage.setItem('isLoggedIn', 'true');
@@ -73,7 +76,7 @@ export default {
 
         axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
 
-        router.push('/admin');
+        router.push(form.value.isAdmin ? '/admin' : '/');
       } catch (err) {
         error.value = err.response?.data?.msg || 'Invalid email or password.';
       }
@@ -82,23 +85,6 @@ export default {
     return { form, error, onSubmit };
   }
 };
-
-  data() {
-    return {
-      form: {
-        email: '',
-        password: ''
-      }
-    }
-  },
-  methods: {
-    onSubmit() {
-      // TODO: do real login here, then...
-      this.$router.push('/admin')
-    }
-  }
-}
-
 </script>
 
 <style scoped>
@@ -122,8 +108,6 @@ export default {
 .form-card h2 {
   text-align: center;
   margin-bottom: 1.5rem;
-  color: #00d4ff;
-
 }
 .form-group {
   margin-bottom: 1.2rem;
@@ -155,14 +139,19 @@ export default {
 .form-links a:hover {
   text-decoration: underline;
 }
+.admin-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
 .form-error {
   color: #ff6f6f;
   font-weight: bold;
   text-align: center;
   margin-bottom: 1rem;
 }
-
-
 .btn-submit {
   width: 100%;
   padding: 0.8rem;

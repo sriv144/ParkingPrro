@@ -35,10 +35,11 @@ export default {
     }
 
     const navLinks = [
-      { path: '/', label: 'Home' },
-      { path: '/users', label: 'Users' },
-      { path: '/search', label: 'Search' },
-      { path: '/summary', label: 'Summary' }
+      { path: '/admin', label: 'Dashboard' },
+      { path: '/admin/lots', label: 'Parking Lots' },
+      { path: '/admin/users', label: 'Users' },
+      { path: '/admin/search', label: 'Search' },
+      { path: '/admin/summary', label: 'Summary' }
     ]
 
     return { logout, navLinks }

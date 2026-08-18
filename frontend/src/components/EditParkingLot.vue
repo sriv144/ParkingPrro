@@ -18,13 +18,8 @@
         </label>
 
         <label>
-          Landmark
-          <input v-model="lot.landmark" type="text" />
-        </label>
-
-        <label>
           Pin Code
-          <input v-model="lot.pincode" type="text" />
+          <input v-model="lot.pincode" type="text" required />
         </label>
 
         <label>
@@ -37,20 +32,10 @@
           <input v-model.number="lot.maxSpots" type="number" min="0" />
         </label>
 
-        <label>
-          Contact Number
-          <input v-model="lot.contact" type="text" />
-        </label>
-
-        <div class="checkbox-row">
-          <input v-model="lot.covered" type="checkbox" id="covered" />
-          <label for="covered" class="inline-label">Covered Parking?</label>
-        </div>
-
         <div class="form-actions">
           <button type="button" class="cancel-btn" @click="cancelEdit">Cancel</button>
           <button type="submit" class="save-btn">Save Changes</button>
-          <button type="button" class="delete-btn">Delete</button>
+          <button type="button" class="delete-btn" @click="deleteLot">Delete</button>
         </div>
       </form>
     </div>
@@ -58,29 +43,71 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "EditParkingLot",
+  props: {
+    id: { type: [String, Number], required: true },
+  },
   data() {
     return {
       lot: {
         name: "",
         address: "",
-        landmark: "",
         pincode: "",
         price: null,
         maxSpots: null,
-        contact: "",
-        covered: false,
       },
     };
   },
   methods: {
-    updateLot() {
-      // Add backend call logic here
+    requestConfig() {
+      return { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } };
+    },
+    async fetchLot() {
+      try {
+        const { data } = await axios.get(`/api/admin/lots/${this.id}`, this.requestConfig());
+        this.lot = {
+          name: data.name,
+          address: data.address,
+          pincode: data.pin_code,
+          price: data.price,
+          maxSpots: data.capacity,
+        };
+      } catch (err) {
+        alert(err.response?.data?.msg || "Failed to load parking lot");
+        this.$router.push("/admin");
+      }
+    },
+    async updateLot() {
+      try {
+        await axios.put(`/api/admin/lots/${this.id}`, {
+          prime_location_name: this.lot.name,
+          address: this.lot.address,
+          pin_code: this.lot.pincode,
+          price: Number(this.lot.price),
+          number_of_spots: Number(this.lot.maxSpots),
+        }, this.requestConfig());
+        this.$router.push("/admin");
+      } catch (err) {
+        alert(err.response?.data?.msg || "Failed to update parking lot");
+      }
+    },
+    async deleteLot() {
+      try {
+        await axios.delete(`/api/admin/lots/${this.id}`, this.requestConfig());
+        this.$router.push("/admin");
+      } catch (err) {
+        alert(err.response?.data?.msg || "Failed to delete parking lot");
+      }
     },
     cancelEdit() {
       this.$router.back();
     },
+  },
+  mounted() {
+    this.fetchLot();
   },
 };
 </script>

@@ -4,6 +4,10 @@
   </div>
 </template>
 
+<script>
+export default { name: 'AppBase' }
+</script>
+
 <style>
 :root {
     --primary-accent: #58D5F7;

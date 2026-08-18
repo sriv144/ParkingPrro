@@ -1,13 +1,9 @@
 import { createApp, reactive } from 'vue';
-
-import { createApp } from 'vue';
-
 import App from './App.vue';
 import router from './router/index.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-
 
 // ✅ Global reactive auth state
 const authState = reactive({
@@ -27,5 +23,3 @@ const app = createApp(App);
 app.provide('authState', authState);
 
 app.use(router).mount('#app');
-createApp(App).use(router).mount('#app');
-
