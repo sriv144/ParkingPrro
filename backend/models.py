@@ -24,8 +24,6 @@ class User(db.Model):
 
 
 
-    reservations  = db.relationship('Reservation', back_populates='user')
-
 class ParkingLot(db.Model):
     id                  = db.Column(db.Integer, primary_key=True)
     prime_location_name = db.Column(db.String(128), nullable=False)

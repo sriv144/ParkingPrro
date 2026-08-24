@@ -1,0 +1,57 @@
+name: ParkingPro Android internal build
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["parkingpro-v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  android-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - uses: expo/expo-github-action@v9
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Queue internal Android APK
+        id: eas-build
+        working-directory: apps/mobile
+        run: |
+          eas build --platform android --profile preview --non-interactive --wait --json > eas-build.json
+          jq -r '.[0].artifacts.buildUrl' eas-build.json > apk-url.txt
+          test -s apk-url.txt
+        env:
+          EXPO_PUBLIC_API_URL: ${{ vars.PARKINGPRO_API_URL }}
+          EXPO_PUBLIC_EAS_PROJECT_ID: ${{ vars.EXPO_PROJECT_ID }}
+          EXPO_PUBLIC_RAZORPAY_KEY_ID: ${{ vars.EXPO_PUBLIC_RAZORPAY_KEY_ID }}
+          EXPO_PUBLIC_DEMO_DRIVER_EMAIL: ${{ vars.PARKINGPRO_DEMO_DRIVER_EMAIL }}
+          EXPO_PUBLIC_DEMO_DRIVER_PASSWORD: ${{ secrets.PARKINGPRO_DEMO_DRIVER_PASSWORD }}
+      - name: Download signed preview APK
+        working-directory: apps/mobile
+        run: curl --fail --location --retry 3 --output parkingpro-preview.apk "$(cat apk-url.txt)"
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Install pinned Maestro CLI
+        run: |
+          mkdir -p "$RUNNER_TEMP/parkingpro-maestro"
+          curl --fail --silent --show-error --location --output "$RUNNER_TEMP/parkingpro-maestro.zip" https://github.com/mobile-dev-inc/Maestro/releases/download/cli-2.7.0/maestro.zip
+          echo "a4ccab6b604617e7aef6db4f885666056eabe5cfa32befaa3bc994041b8fcbb5  $RUNNER_TEMP/parkingpro-maestro.zip" | sha256sum --check
+          unzip -q "$RUNNER_TEMP/parkingpro-maestro.zip" -d "$RUNNER_TEMP/parkingpro-maestro"
+      - name: Run Android smoke journey on an emulator
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 34
+          arch: x86_64
+          profile: pixel_6
+          script: adb install -r apps/mobile/parkingpro-preview.apk && "$RUNNER_TEMP/parkingpro-maestro/bin/maestro" test --include-tags smoke apps/mobile/.maestro
