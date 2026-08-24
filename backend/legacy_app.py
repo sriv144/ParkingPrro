@@ -26,4 +26,4 @@ def create_legacy_app() -> Flask:
 
 
 if __name__ == "__main__":
-    create_legacy_app().run(debug=True)
+    create_legacy_app().run(debug=False)
