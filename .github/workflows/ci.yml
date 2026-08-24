@@ -3,7 +3,11 @@ name: ParkingPro CI
 on:
   pull_request:
   push:
-    branches: [main, "codex/**"]
+    branches: [main]
+
+concurrency:
+  group: parkingpro-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
