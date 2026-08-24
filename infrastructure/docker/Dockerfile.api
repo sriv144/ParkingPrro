@@ -7,7 +7,11 @@ RUN python -m venv /opt/venv && /opt/venv/bin/pip install .
 
 FROM python:3.12-slim AS runtime
 ENV PATH="/opt/venv/bin:$PATH" PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
-RUN groupadd --system parkingpro && useradd --system --gid parkingpro --home /app parkingpro
+RUN apt-get update \
+    && apt-get upgrade --yes --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --system parkingpro \
+    && useradd --system --gid parkingpro --home /app parkingpro
 WORKDIR /app
 COPY --from=builder /opt/venv /opt/venv
 COPY --chown=parkingpro:parkingpro backend/parkingpro ./parkingpro

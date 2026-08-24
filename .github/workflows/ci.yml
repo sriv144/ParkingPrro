@@ -169,15 +169,28 @@ jobs:
           curl --fail --silent --show-error http://127.0.0.1:8080/app/overview | grep -q '<div id="root"></div>'
           test "$(docker inspect -f '{{.RestartCount}}' parkingpro-ci-api)" = "0"
           test "$(docker inspect -f '{{.RestartCount}}' parkingpro-ci-operator)" = "0"
-      - uses: aquasecurity/trivy-action@v0.36.0
+      - name: Enforce fixable high and critical image findings
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: parkingpro-api:${{ github.sha }}
+          version: v0.74.0
+          format: table
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+      - name: Create Trivy SARIF report
+        if: always()
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: parkingpro-api:${{ github.sha }}
+          version: v0.74.0
           format: sarif
           output: trivy-api.sarif
           severity: CRITICAL,HIGH
           ignore-unfixed: true
-          exit-code: "1"
-      - uses: github/codeql-action/upload-sarif@v4
+          exit-code: "0"
+      - name: Upload Trivy SARIF report
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: trivy-api.sarif
