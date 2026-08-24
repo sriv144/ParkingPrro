@@ -1,0 +1,13 @@
+frontend
+legacy
+.eslintrc.js
+node_modules
+**/dist
+**/build
+**/coverage
+**/playwright-report
+**/test-results
+docs/mockups
+docs/screenshots
+packages/api-contracts/openapi.json
+packages/api-contracts/src/schema.d.ts

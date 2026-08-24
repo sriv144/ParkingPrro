@@ -1,135 +1,105 @@
-# ParkingPrro
+# ParkingPro
 
-ParkingPrro is a full-stack vehicle parking management application with a Vue 3 frontend and a Flask REST API. The verified application supports user registration and login, role-aware JWT authentication, and protected admin workflows for managing parking lots, spot capacity, occupancy, and registered users.
+ParkingPro is a portfolio-grade parking reservation system for Bengaluru with a
+React Native driver app, React operator console, and transaction-safe Flask API.
+The v2 implementation is active on the codex/parkingpro-v2-foundation branch.
+Deployment links will be added only after hosted smoke tests pass.
 
-## Screenshots
+> Release status: implementation in progress. Local quality gates pass, but the
+> public Render services and EAS Android build are not published yet. Render's
+> free API can cold-start, and both clients surface that limitation explicitly.
 
-### Admin Parking Dashboard
+## What a reviewer can evaluate
 
-![Admin Parking Dashboard](docs/screenshots/admin-dashboard.png)
-
-### Parking Lot Management
-
-![Parking Lot Management](docs/screenshots/parking-lots.png)
-
-### Add a Parking Lot
-
-![Add a Parking Lot](docs/screenshots/add-parking-lot.png)
-
-### Edit a Parking Lot
-
-![Edit a Parking Lot](docs/screenshots/edit-parking-lot.png)
-
-### Registered Users
-
-![Registered Users](docs/screenshots/registered-users.png)
-
-### Landing Page
-
-![ParkingPrro Landing Page](docs/screenshots/landing-page.png)
-
-### Authentication
-
-![ParkingPrro Login](docs/screenshots/login.png)
-
-## Features
-
-- User registration with vehicle and contact details
-- User and administrator login through separate API paths
-- JWT authentication with backend-enforced admin role checks
-- Protected parking-lot listing, creation, editing, and deletion
-- Automatic creation and capacity management of parking spots
-- Occupied and available spot totals per lot and across the dashboard
-- Admin view of registered users and their active spot IDs
+- Mapbox nearby-facility discovery in an Expo SDK 57 Android development build.
+- Vehicle management, server quotes, ten-minute holds, and integer-paise pricing.
+- PostgreSQL/PostGIS search and a btree_gist exclusion rule preventing overlap.
+- Razorpay test orders, signatures, webhook deduplication, and test refunds.
+- Signed offline QR passes with live replay and state validation.
+- A responsive React console for inventory, scanning, check-in, checkout, and reports.
+- Rotating mobile refresh tokens and CSRF-protected HttpOnly web refresh cookies.
+- Generated OpenAPI types, tests, Docker, CI, Render, and EAS configuration.
 
 ## Architecture
 
-```text
-Vue 3 frontend
-      │
-      │ Axios / REST
-      ▼
-Flask API + JWT authorization
-      │
-      │ Flask-SQLAlchemy
-      ▼
-SQLite
-```
+    Expo React Native driver ─┐
+                              ├── HTTPS / OpenAPI ── Flask modular monolith
+    React operator console ───┘                         │
+                                                       ├── PostgreSQL + PostGIS
+                                                       ├── Upstash Redis / QStash
+                                                       ├── Razorpay test mode
+                                                       └── Sentry
 
-Redis and Celery are present in the backend dependencies, and a Redis URL is configured for future caching or background-job use. The current repository does not initialize a Celery application, define tasks, or make Redis cache calls, so neither service is required for the verified admin workflow.
+This is intentionally a modular monolith. Kubernetes, Jenkins, microservices,
+Terraform, WebSockets, real payments, iOS, and store publication are deferred;
+their operational cost would not improve the early portfolio release.
 
-## Tech Stack
+## Repository
 
-**Frontend**
+    apps/mobile                 Expo Router / React Native
+    apps/operator-web           Vite / React / TypeScript
+    backend/parkingpro          Flask application factory and domain modules
+    backend/migrations          PostgreSQL/PostGIS Alembic history
+    packages/api-contracts      OpenAPI and generated TypeScript
+    packages/design-tokens      Shared visual and motion values
+    infrastructure              Docker and Render definitions
+    docs                        Specs, ADRs, runbooks, and mockups
+    frontend                    Preserved Vue v1 application
 
-- Vue 3
-- Vue Router 4
-- Axios
-- Bootstrap 5
-- Font Awesome
+The Vue application and its verified screenshots remain intact until React parity
+and deployed evidence are complete. They are historical proof, not the v2 runtime.
 
-**Backend**
+## Local setup
 
-- Flask
-- Flask-SQLAlchemy
-- Flask-JWT-Extended
-- Werkzeug password hashing
+Requirements: Node.js 22+, Python 3.11+, Docker Desktop, a public Mapbox token,
+and Razorpay/Upstash test credentials for their respective workflows.
 
-**Data and supporting dependencies**
+    npm ci
+    python -m venv backend\.venv
+    backend\.venv\Scripts\python.exe -m pip install -e "backend[dev]"
+    docker compose up -d postgres redis
 
-- SQLite
-- Redis client
-- Celery
+    $env:DATABASE_URL = "postgresql+psycopg://parkingpro:parkingpro@localhost:5432/parkingpro"
+    backend\.venv\Scripts\python.exe -m flask --app parkingpro.wsgi db upgrade
+    backend\.venv\Scripts\python.exe -m flask --app parkingpro.wsgi seed-demo
+    backend\.venv\Scripts\python.exe -m flask --app parkingpro.wsgi run
 
-## Core Engineering Concepts
+Copy the example client environments, then run npm run web:dev and
+npm run mobile:start. Mapbox and Razorpay are native modules, so the full mobile
+journey requires an EAS development/internal build rather than Expo Go.
 
-- REST API separation between the Vue client and Flask server
-- JWT issuance and role-based authorization
-- Relational modelling for users, parking lots, parking spots, and reservations
-- Parking-lot capacity changes that preserve occupied spots
-- Cascading lot-to-spot persistence through SQLAlchemy relationships
-- Client-side route protection and authenticated API requests
+## Quality gates
 
-## Local Setup
+    npm run lint
+    npm run typecheck
+    npm test
+    npm run build
+    backend\.venv\Scripts\python.exe -m ruff check backend\parkingpro backend\tests backend\migrations
 
-### Backend
+PostgreSQL-only tests cover refresh rotation, role isolation, idempotent replay,
+overlap rejection, and fifty concurrent hold attempts for one spot. They run in CI
+against PostGIS and skip when no integration database is configured locally.
 
-From the repository root in PowerShell:
+The current Expo/Metro build chain carries three reviewed upstream `image-size`
+and `uuid` advisories for which its dependency ranges have no compatible patch as
+of 2026-08-21. These build-only paths are not exposed to untrusted input; CI
+allowlists only those exact advisory IDs and the exception is recorded in
+[security.md](docs/security.md).
 
-```powershell
-cd backend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+## Documentation
 
-$env:JWT_SECRET_KEY = "choose-a-local-development-secret"
-$env:ADMIN_USERNAME = "choose-a-local-admin-name"
-$env:ADMIN_PASSWORD = "choose-a-local-admin-password"
+Start with [docs/README.md](docs/README.md). It links product, architecture, data
+model, API, design, security, testing, deployment, skills, ADRs, and screen boards.
+The exact provider credentials and first-release evidence gate are in the
+[hosted release checklist](docs/release-checklist.md).
 
-python create_db.py
-python app.py
-```
+## Legacy ParkingPrro v1
 
-The API starts at `http://127.0.0.1:5000`.
+The original Vue + Flask + SQLite showcase remains under frontend/ and the
+historical backend modules. Screenshots remain in docs/screenshots/. It moves with
+Git history to legacy/vue-showcase only after v2 reaches deployed feature parity.
 
-### Frontend
-
-In a second PowerShell terminal:
-
-```powershell
-cd frontend
-npm install
-npm run serve
-```
-
-The Vue development server starts at `http://127.0.0.1:8080` and proxies `/api` requests to Flask.
-
-### Verification
-
-```powershell
-cd frontend
-npm run lint
-npm run build
-```
-
-The local SQLite database, virtual environment, installed Node modules, and build output are ignored by Git.
+For local historical review only, run `python legacy_app.py` from `backend/`, then
+run `npm ci` and `npm run serve` from `frontend/`. The v1 runner is excluded from v2 containers and
+must not be deployed because its intentionally preserved authentication model is
+documented as insecure in `docs/security.md`.

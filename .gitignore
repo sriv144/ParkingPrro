@@ -46,6 +46,9 @@ pip-wheel-metadata/
 .coverage.*
 .pytest_cache/
 htmlcov/
+coverage/
+playwright-report/
+test-results/
 
 # Flask instance folder
 instance/
@@ -83,3 +86,4 @@ build/
 
 # Caches
 .cache/
+.expo/

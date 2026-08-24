@@ -1,5 +1,37 @@
 {
-  "dependencies": {
-    "@fortawesome/fontawesome-free": "^6.7.2"
+  "name": "parkingpro",
+  "version": "2.0.0",
+  "packageManager": "npm@10.9.4",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "mobile:start": "npm run start --workspace @parkingpro/mobile",
+    "mobile:android": "npm run android --workspace @parkingpro/mobile",
+    "web:dev": "npm run dev --workspace @parkingpro/operator-web",
+    "build": "npm run build --workspace @parkingpro/operator-web",
+    "audit:known": "node scripts/verify-npm-audit.mjs",
+    "format:check": "prettier --check .",
+    "smoke:deployment": "node scripts/smoke-deployment.mjs",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "devDependencies": {
+    "@expo/dom-webview": "57.0.1",
+    "@expo/log-box": "57.0.3",
+    "expo-constants": "57.0.13",
+    "prettier": "3.9.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.2",
+    "react-native-reanimated": "4.5.1",
+    "react-native-svg": "15.15.4",
+    "react-native-worklets": "0.10.1"
   }
 }

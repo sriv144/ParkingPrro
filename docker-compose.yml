@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: postgis/postgis:17-3.5
+    environment:
+      POSTGRES_DB: parkingpro
+      POSTGRES_USER: parkingpro
+      POSTGRES_PASSWORD: parkingpro
+    ports:
+      - "5432:5432"
+    volumes:
+      - parkingpro_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U parkingpro -d parkingpro"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile.api
+    environment:
+      APP_ENV: development
+      DATABASE_URL: postgresql+psycopg://parkingpro:parkingpro@postgres:5432/parkingpro
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: compose-development-session
+      JWT_SECRET_KEY: compose-development-jwt
+      QR_SIGNING_KEY: compose-development-qr
+      CORS_ORIGINS: http://localhost:5173
+      TRUSTED_HOSTS: localhost,127.0.0.1,api
+      PUBLIC_API_URL: http://localhost:5000
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:5000/health/live')",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  parkingpro_postgres:

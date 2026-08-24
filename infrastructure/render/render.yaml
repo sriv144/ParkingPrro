@@ -1,0 +1,91 @@
+services:
+  - type: web
+    name: parkingpro-api
+    runtime: docker
+    dockerfilePath: ./infrastructure/docker/Dockerfile.api
+    dockerContext: .
+    plan: free
+    region: singapore
+    autoDeployTrigger: off
+    healthCheckPath: /health/ready
+    initialDeployHook: >-
+      python -m flask --app parkingpro.wsgi db upgrade &&
+      python -m flask --app parkingpro.wsgi seed-demo
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: QR_SIGNING_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        sync: false
+      - key: TRUSTED_HOSTS
+        sync: false
+      - key: PUBLIC_API_URL
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: QSTASH_TOKEN
+        sync: false
+      - key: QSTASH_CURRENT_SIGNING_KEY
+        sync: false
+      - key: QSTASH_NEXT_SIGNING_KEY
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: DEMO_DRIVER_EMAIL
+        sync: false
+      - key: DEMO_DRIVER_PASSWORD
+        sync: false
+      - key: DEMO_OPERATOR_EMAIL
+        sync: false
+      - key: DEMO_OPERATOR_PASSWORD
+        sync: false
+
+  - type: web
+    name: parkingpro-operator
+    runtime: static
+    autoDeployTrigger: off
+    rootDir: .
+    buildCommand: npm ci && npm run build --workspace @parkingpro/operator-web
+    staticPublishPath: ./apps/operator-web/dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+      - key: VITE_DRIVER_BUILD_URL
+        sync: false
+      - key: VITE_DEMO_OPERATOR_EMAIL
+        sync: false
+      - key: VITE_DEMO_OPERATOR_PASSWORD
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: no-referrer
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(self), geolocation=()
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https:; font-src 'self'; media-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"

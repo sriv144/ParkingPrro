@@ -1,0 +1,34 @@
+appId: com.sriv144.parkingpro
+name: Driver search and reservation smoke test
+tags:
+  - smoke
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "Starting the demo service"
+    timeout: 10000
+- extendedWaitUntil:
+    visible: "Welcome back"
+    timeout: 90000
+- tapOn: "Use demo driver"
+- extendedWaitUntil:
+    visible: "Where are you going?"
+    timeout: 30000
+- assertVisible: "Choose a time"
+- tapOn:
+    id: "choose-time-button"
+- extendedWaitUntil:
+    visible: "Review reservation"
+    timeout: 30000
+- tapOn:
+    id: "review-reservation-button"
+- extendedWaitUntil:
+    visible: "Hold spot for 10 minutes"
+    timeout: 30000
+- tapOn:
+    id: "hold-reservation-button"
+- extendedWaitUntil:
+    visible: "Open Razorpay test checkout"
+    timeout: 30000
+- assertVisible: "RAZORPAY TEST MODE · NO REAL CHARGE"
