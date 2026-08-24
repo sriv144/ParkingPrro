@@ -39,7 +39,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     "expo-notifications",
-    "@rnmapbox/maps",
+    "@maplibre/maplibre-react-native",
   ],
   experiments: { typedRoutes: true },
   extra: {
@@ -47,7 +47,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID ?? "",
     },
     apiUrl: process.env.EXPO_PUBLIC_API_URL ?? "http://10.0.2.2:5000",
-    mapboxAccessToken: process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN ?? "",
     razorpayKeyId: process.env.EXPO_PUBLIC_RAZORPAY_KEY_ID ?? "",
   },
 });

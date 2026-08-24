@@ -21,7 +21,7 @@ const report = JSON.parse(result.stdout);
 const vulnerabilities = report.vulnerabilities ?? {};
 const allowedPackages = new Set([
   // npm propagates Expo's reviewed build-time advisory to this direct native plugin.
-  "@rnmapbox/maps",
+  "@maplibre/maplibre-react-native",
   "@expo/cli",
   "@expo/config",
   "@expo/config-plugins",
@@ -39,7 +39,7 @@ const allowedPackages = new Set([
   "uuid",
   "xcode",
 ]);
-const allowedAdvisories = new Set([1119441, 1138808, 1138809]);
+const allowedAdvisories = new Set([1119441]);
 
 const unexpectedPackages = Object.keys(vulnerabilities).filter(
   (name) => !allowedPackages.has(name),
@@ -73,5 +73,5 @@ if (
 }
 
 console.log(
-  "Dependency audit contains only the three reviewed Expo build-tool advisories documented in docs/security.md.",
+  "Dependency audit contains only the reviewed Expo build-tool advisory documented in docs/security.md.",
 );

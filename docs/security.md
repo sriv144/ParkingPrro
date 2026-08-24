@@ -30,16 +30,13 @@
 
 ## Temporary upstream dependency exception
 
-As of 2026-08-24, Expo SDK 57's build chain resolves vulnerable versions of
-`image-size` and `uuid`. GitHub advisories GHSA-w3rx-r6r6-pgpr and
-GHSA-5p2g-fcmc-qvqq affect every published `image-size` release, while Expo's
-`xcode` helper constrains `uuid` to v7 despite GHSA-w5hq-g745-h8pq being fixed in
-11.1.1. npm workspace overrides do not replace that incompatible transitive range.
-ParkingPro does not accept or inspect user-controlled images in Node/Metro and does
-not invoke UUID v3/v5/v6 with caller-supplied buffers; these packages execute only
-while developers or EAS bundle trusted repository assets. CI allowlists exactly
-these three advisory IDs and their known Expo dependency paths, including npm's
-propagated `@rnmapbox/maps → expo` effect, while failing on any new advisory or
+As of 2026-08-24, Expo SDK 57's `xcode` build helper constrains `uuid` to v7 despite
+GHSA-w5hq-g745-h8pq being fixed in 11.1.1. npm workspace overrides do not replace
+that incompatible transitive range. ParkingPro does not invoke UUID v3/v5/v6 with
+caller-supplied buffers; this package executes only while developers or EAS bundle
+trusted repository assets. CI allowlists exactly this advisory ID and its known Expo
+dependency paths, including npm's propagated
+`@maplibre/maplibre-react-native → expo` effect, while failing on any new advisory or
 unreviewed package. It does not apply npm's suggested breaking downgrade to Expo 53.
 
 Remove this exception as soon as Expo/Metro publishes a compatible patched

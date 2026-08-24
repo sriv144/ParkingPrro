@@ -28,19 +28,19 @@ public URL before it can become release evidence.
 
 ## Product journeys
 
-| Journey                             | Evidence                                                                                             | Status                                     |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| Service wake-up and retry           | Explicit mobile launch state plus bounded operator pre-login health retry                            | Verified locally                           |
-| Driver registration and login       | Strict Zod/RHF forms, rotating SecureStore refresh session and role-safe API                         | Verified locally                           |
-| Map search and availability filters | Mapbox screen, name/address search, radius/time/type sheet and eligible-lot-only PostGIS query       | Verified locally                           |
-| Vehicle CRUD                        | Create, edit, select and remove car/bike/EV/accessible vehicles; ownership checks remain server-side | Verified locally                           |
-| Quote and ten-minute hold           | 30-minute arrival/duration controls through 24 hours, authoritative quote and idempotent hold        | Verified locally                           |
-| Razorpay checkout                   | Native test checkout, server verification and signed webhook path                                    | Backend verified; EAS/vendor sheet pending |
-| Offline QR pass                     | SecureStore cache and signed reservation-ID/nonce payload with live scan validation                  | Verified locally; physical device pending  |
-| Cancellation and refund             | Pre-start cancellation, captured test refund and repeat-safety integration tests                     | Verified locally                           |
-| Operator inventory                  | Facility create/edit/state, spot operational state and explicit lot assignments                      | Verified locally                           |
-| Scan, check-in and checkout         | Camera/manual scan, replay protection, state transitions and immediate query invalidation            | Verified locally                           |
-| Occupancy and revenue               | Ten-second polling, animated KPIs and Recharts reporting                                             | Verified locally                           |
+| Journey                             | Evidence                                                                                                     | Status                                     |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
+| Service wake-up and retry           | Explicit mobile launch state plus bounded operator pre-login health retry                                    | Verified locally                           |
+| Driver registration and login       | Strict Zod/RHF forms, rotating SecureStore refresh session and role-safe API                                 | Verified locally                           |
+| Map search and availability filters | MapLibre/OpenFreeMap screen, name/address search, radius/time/type sheet and eligible-lot-only PostGIS query | Verified locally                           |
+| Vehicle CRUD                        | Create, edit, select and remove car/bike/EV/accessible vehicles; ownership checks remain server-side         | Verified locally                           |
+| Quote and ten-minute hold           | 30-minute arrival/duration controls through 24 hours, authoritative quote and idempotent hold                | Verified locally                           |
+| Razorpay checkout                   | Native test checkout, server verification and signed webhook path                                            | Backend verified; EAS/vendor sheet pending |
+| Offline QR pass                     | SecureStore cache and signed reservation-ID/nonce payload with live scan validation                          | Verified locally; physical device pending  |
+| Cancellation and refund             | Pre-start cancellation, captured test refund and repeat-safety integration tests                             | Verified locally                           |
+| Operator inventory                  | Facility create/edit/state, spot operational state and explicit lot assignments                              | Verified locally                           |
+| Scan, check-in and checkout         | Camera/manual scan, replay protection, state transitions and immediate query invalidation                    | Verified locally                           |
+| Occupancy and revenue               | Ten-second polling, animated KPIs and Recharts reporting                                                     | Verified locally                           |
 
 ## Automated acceptance scenarios
 

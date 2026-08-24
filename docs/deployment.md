@@ -7,14 +7,15 @@
 - Local: Docker Compose API/PostgreSQL/Redis plus local web/mobile clients.
 - CI: ephemeral PostgreSQL/PostGIS and Redis services with deterministic seed data.
 - Preview: Render free API/static site, Neon PostgreSQL, Upstash Redis/QStash,
-  Razorpay test mode, Mapbox public token, Sentry, Expo EAS internal Android build.
+  Razorpay test mode, MapLibre with OpenFreeMap, Sentry, Expo EAS internal Android
+  build.
 
 ## Secret ownership
 
 Secrets live only in GitHub environments and provider secret stores. Client bundles
-may contain only explicitly public Mapbox/Razorpay identifiers. Flask/JWT/QR,
-database, Redis, QStash, Razorpay secret, and Sentry upload credentials are server or
-CI secrets and never committed.
+may contain only explicitly public Razorpay identifiers. OpenFreeMap needs no account,
+card, or token. Flask/JWT/QR, database, Redis, QStash, Razorpay secret, and Sentry
+upload credentials are server or CI secrets and never committed.
 
 ## Delivery sequence
 

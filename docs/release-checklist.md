@@ -36,8 +36,6 @@ the migration/deploy jobs. Configure these repository values:
 | Secret   | `PARKINGPRO_DEMO_DRIVER_PASSWORD`   | Synthetic driver credential                             |
 | Secret   | `PARKINGPRO_DEMO_OPERATOR_PASSWORD` | Synthetic, facility-scoped operator credential          |
 | Secret   | `EXPO_TOKEN`                        | Expo robot/personal access token scoped to this project |
-| Secret   | `EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN`   | Restricted Mapbox public runtime token                  |
-| Secret   | `RNMAPBOX_MAPS_DOWNLOAD_TOKEN`      | Mapbox downloads token used only by EAS build           |
 | Variable | `PARKINGPRO_API_URL`                | Public HTTPS API origin                                 |
 | Variable | `PARKINGPRO_WEB_URL`                | Public HTTPS operator origin                            |
 | Variable | `PARKINGPRO_DEMO_DRIVER_EMAIL`      | Published synthetic driver email                        |
@@ -56,13 +54,15 @@ published demo. Rotate the demo credentials if the environment is abused.
    receiver signing keys into Render.
 3. Create Razorpay test keys and a webhook secret. Register
    `/api/v1/webhooks/razorpay` on the final API origin.
-4. Create a Render Blueprint, select the custom path
+4. Use MapLibre with OpenFreeMap's public dark style; no map provider account, token,
+   or payment method is required. Preserve the automatic map attribution.
+5. Create a Render Blueprint, select the custom path
    `infrastructure/render/render.yaml`, set all `sync: false` values, and keep
    auto-deploy off because GitHub deploy hooks gate releases after CI. The file is
    locally validated against Render's official Blueprint schema.
-5. Create the EAS project, set the project UUID, and configure Android push
+6. Create the EAS project, set the project UUID, and configure Android push
    credentials before expecting remote notifications.
-6. Configure Sentry projects/DSNs as desired; the API automatically uses Render's
+7. Configure Sentry projects/DSNs as desired; the API automatically uses Render's
    git commit as its release identifier.
 
 ## First release

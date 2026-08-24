@@ -1,8 +1,7 @@
 import type { ParkingLotSummary } from "@parkingpro/api-contracts";
 import { colors } from "@parkingpro/design-tokens";
-import Mapbox from "@rnmapbox/maps";
+import { Camera, Map, Marker } from "@maplibre/maplibre-react-native";
 import { useQuery } from "@tanstack/react-query";
-import Constants from "expo-constants";
 import * as Location from "expo-location";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -20,9 +19,8 @@ import Animated, { FadeInDown, FadeOutDown } from "react-native-reanimated";
 import { apiRequest } from "../src/lib/api";
 import { Brand, Screen } from "../src/ui/primitives";
 
-const token =
-  (Constants.expoConfig?.extra?.mapboxAccessToken as string | undefined) ?? "";
-Mapbox.setAccessToken(token);
+const OPEN_FREE_MAP_DARK_STYLE_URL =
+  "https://tiles.openfreemap.org/styles/dark";
 
 type SpotFilter = "" | "car" | "bike" | "ev" | "accessible";
 
@@ -293,46 +291,36 @@ export default function MapScreen() {
         style={styles.map}
         accessibilityLabel="Map of Bengaluru demo parking facilities"
       >
-        {!token ? (
-          <View style={styles.mapMessage}>
-            <Text style={styles.error}>
-              Set EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN to load the map.
-            </Text>
-          </View>
-        ) : (
-          <Mapbox.MapView
-            style={StyleSheet.absoluteFill}
-            styleURL={Mapbox.StyleURL.Dark}
-            logoEnabled={false}
-            attributionEnabled={false}
-          >
-            <Mapbox.Camera
-              centerCoordinate={coordinates}
-              zoomLevel={12.5}
-              animationMode="flyTo"
-            />
-            <Mapbox.PointAnnotation
-              id="current-location"
-              coordinate={coordinates}
+        <Map
+          style={StyleSheet.absoluteFill}
+          mapStyle={OPEN_FREE_MAP_DARK_STYLE_URL}
+          logo={false}
+          attribution
+        >
+          <Camera
+            center={coordinates}
+            zoom={12.5}
+            easing="fly"
+            duration={900}
+          />
+          <Marker id="current-location" lngLat={coordinates}>
+            <View style={styles.currentLocation} />
+          </Marker>
+          {visibleLots?.map((lot) => (
+            <Marker
+              key={lot.id}
+              id={lot.id}
+              lngLat={[lot.longitude, lot.latitude]}
+              onPress={() => setSelectedId(lot.id)}
             >
-              <View style={styles.currentLocation} />
-            </Mapbox.PointAnnotation>
-            {visibleLots?.map((lot) => (
-              <Mapbox.PointAnnotation
-                key={lot.id}
-                id={lot.id}
-                coordinate={[lot.longitude, lot.latitude]}
-                onSelected={() => setSelectedId(lot.id)}
+              <View
+                style={selected?.id === lot.id ? styles.pin : styles.pinMuted}
               >
-                <View
-                  style={selected?.id === lot.id ? styles.pin : styles.pinMuted}
-                >
-                  <Text style={styles.pinText}>P</Text>
-                </View>
-              </Mapbox.PointAnnotation>
-            ))}
-          </Mapbox.MapView>
-        )}
+                <Text style={styles.pinText}>P</Text>
+              </View>
+            </Marker>
+          ))}
+        </Map>
         {lots.isLoading && (
           <ActivityIndicator
             style={styles.loader}
