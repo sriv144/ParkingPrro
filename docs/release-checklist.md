@@ -9,15 +9,19 @@ release before hosted smoke tests pass.
 ## Current external state (2026-08-24)
 
 - GitHub remote: `sriv144/ParkingPrro` (public), default branch `main`.
-- Implementation branch: `codex/parkingpro-v2-foundation` at local base `d6a94ab`.
-- GitHub authentication is available, but the repository currently has no Actions
-  secrets, variables, protected `parkingpro-production` environment, workflows, or
-  workflow runs on the remote.
-- No commit, push, provider resource, migration, or deployment was created by this
-  implementation session.
-- Local PostGIS migrations, expanded application gates, and final non-root API and
-  operator container health checks passed; hosted CI, EAS build, provider payment,
-  and public smoke tests are still release requirements.
+- Implementation branch: `codex/parkingpro-v2-foundation`; draft pull request:
+  [#1](https://github.com/sriv144/ParkingPrro/pull/1).
+- Hosted CI run
+  [32737931540](https://github.com/sriv144/ParkingPrro/actions/runs/32737931540)
+  passed `security`, `verify`, and `containers`, including PostGIS migrations and
+  concurrency tests, Ruff, mypy, pytest, frontend builds, Playwright, contract drift,
+  Gitleaks, CodeQL, non-root runtime health, and fixable HIGH/CRITICAL Trivy gates.
+- The protected `parkingpro-production` GitHub environment exists, requires approval
+  from `sriv144`, and accepts deployments only from `main`. Its Actions secrets and
+  variables are intentionally not populated yet.
+- No provider resource, production migration, Render deployment, or EAS build has
+  been created. Provider payment verification, Android EAS/Maestro, and public smoke
+  tests remain release requirements.
 
 ## GitHub environment
 
