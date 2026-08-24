@@ -15,16 +15,16 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
+      - uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: github/codeql-action/init@v3
+      - uses: github/codeql-action/init@v4
         with:
           languages: javascript-typescript,python
-      - uses: github/codeql-action/analyze@v3
+      - uses: github/codeql-action/analyze@v4
 
   verify:
     runs-on: ubuntu-latest
@@ -55,13 +55,13 @@ jobs:
       PARKINGPRO_TEST_DATABASE_URL: postgresql+psycopg://parkingpro:parkingpro@localhost:5432/parkingpro_test
       REDIS_URL: redis://localhost:6379/0
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: backend/pyproject.toml
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: npm
@@ -108,7 +108,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build API image
         run: docker build -f infrastructure/docker/Dockerfile.api -t parkingpro-api:${{ github.sha }} .
       - name: Build operator image
@@ -165,7 +165,7 @@ jobs:
           curl --fail --silent --show-error http://127.0.0.1:8080/app/overview | grep -q '<div id="root"></div>'
           test "$(docker inspect -f '{{.RestartCount}}' parkingpro-ci-api)" = "0"
           test "$(docker inspect -f '{{.RestartCount}}' parkingpro-ci-operator)" = "0"
-      - uses: aquasecurity/trivy-action@0.33.1
+      - uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: parkingpro-api:${{ github.sha }}
           format: sarif
@@ -173,7 +173,7 @@ jobs:
           severity: CRITICAL,HIGH
           ignore-unfixed: true
           exit-code: "1"
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: trivy-api.sarif
@@ -199,8 +199,8 @@ jobs:
       DEMO_OPERATOR_EMAIL: ${{ vars.PARKINGPRO_DEMO_OPERATOR_EMAIL }}
       DEMO_OPERATOR_PASSWORD: ${{ secrets.PARKINGPRO_DEMO_OPERATOR_PASSWORD }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: python -m pip install -e backend
@@ -216,8 +216,8 @@ jobs:
     needs: [verify, containers, migrate]
     environment: parkingpro-production
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
       - name: Trigger Render API deployment
